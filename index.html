@@ -5,58 +5,94 @@
 </head>
 
 <style>
-li {
-	display: inline-block;
-	padding: 50px;
-	border-radius: 25px;
+
+body {
+	margin: 0px;
+	background-color: #2e2e2e;
 }
 
-li:hover {
-	background-color: #404040;
+#nav_bar {
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+.color {
+	background-color: #2e2e2e;
 }
 
 ul {
 	list-style-type: none;
-	background-color: black;
-	border-radius: 25px;
+	overflow: hidden;
+}
+
+li {
+	display: inline-block;
+	padding: 50px;
+}
+
+#nav_bar_pages {
+	float: right;
 }
 
 a {
-	font-size: 20px;
 	color: white;
+	font-size: 20px;
 }
 
-#nav_pages {
-	float: right;
+#footer {
+	width: 100%;
+	background-color: #2e2e2e;
+}
+
+#social_media {
 	text-align: center;
-	display: inline-block;
 }
 
-#nav_bar {
-
-}
-
-body {
-	background-color: #dddddd;
-}
 </style>
 
 <body>
 
-<div id="nav_bar">
+<div id="nav_bar" class="color">
 	<ul>
-		<li style="padding: 0px;"><a><img src="https://smallbusinessbc.ca/wp-content/themes/sbbcmain/images/circle-icons/icon-education.svg" height="118"></a></li>
-		<div id="nav_pages">
+		<li style="padding: 0px;"><img src="https://smallbusinessbc.ca/wp-content/themes/sbbcmain/images/circle-icons/icon-education.svg" height="118"></a></li>
+		<div id="nav_bar_pages">
 			<li><a>About</a></li>
 			<li><a>Education</a></li>
 			<li><a>Projects</a></li>
 			<li><a>630-390-5302</a></li>
 		</div>
 	</ul>
+</div>
+
+
+<img src="https://cdn.pixeltote.com/marketing/assets/previews/c/9/c9e0b0f7-8319-4227-afde-95fc34a8e6f5/pv-lg-scenic-view-of-a-lake-and-a-volcano-default-stock-photo.jpg" width= 100%;>
+
+
+<div id="footer">
+	<div id="social_media">
+		<ul>
+			<li><img src="https://icon-library.net/images/facebook-logo-icon/facebook-logo-icon-5.jpg" height="50px" width="50px"></li>
+			<li><img src="https://image.flaticon.com/icons/svg/124/124021.svg" height="50px" width="50px"></li>
+			<li><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/600px-LinkedIn_logo_initials.png" height="50px" width="50px"></li>
+			<li><img src="http://pluspng.com/img-png/instagram-png-instagram-png-logo-1455.png" height="50px" width="50px"></li>
+		</ul>
+	</div>
 <div>
 
-<p>Hello World!</p>
-
 </body>
+
+<script>
+	// Revome Navbar background-color on scroll.
+	window.onscroll = function() {colorNavBarOnScroll()};
+	var navbar = document.getElementById("nav_bar");
+	function colorNavBarOnScroll() {
+		if (window.pageYOffset === 0) {
+			navbar.classList.add("color")
+		} else {
+			navbar.classList.remove("color");
+		}
+	}
+</script>
 
 </html>
