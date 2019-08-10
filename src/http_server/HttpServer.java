@@ -29,6 +29,7 @@ public class HttpServer {
 				while (line != null) {
 					web_page += line;
 					line = reader.readLine();
+					System.out.println(line);
 				}
 				reader.close();
 				
