@@ -14,29 +14,28 @@ public class HttpServer {
 		final ServerSocket server = new ServerSocket(8080);
 		System.out.println("Listening for connection on port 8080...");
 		
+		/*	Retrieve Home Page. */
+		File index = new File("index.html");
+		
+		/* Read Home Page into a String. */
+		BufferedReader reader = new BufferedReader(new FileReader(index));
+		String line = reader.readLine();
+		String web_page = "";
+		while (line != null) {
+			web_page += line;
+			line = reader.readLine();
+		}
+		reader.close();
+		
 		while (true) {
-			
+				
 			/* Listen for client connection. */
-			try (final Socket socket = server.accept()) {
+			final Socket socket = server.accept();				
 				
-				/*	Retrieve Home Page. */
-				File index = new File("index.html");
+			/* Create and Send  Http Response with Home Page as Body. */
+			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
+			socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
 				
-				/* Read Home Page into a String. */
-				BufferedReader reader = new BufferedReader(new FileReader(index));
-				String line = reader.readLine();
-				String web_page = "";
-				while (line != null) {
-					web_page += line;
-					line = reader.readLine();
-				}
-				reader.close();
-				
-				/* Create and Send  Http Response with Home Page as Body. */
-				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
-				socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
-				
-			}
 		}
 	}
 
