@@ -3,6 +3,7 @@ package http_server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class Response implements Runnable {
@@ -19,10 +20,18 @@ public class Response implements Runnable {
 			
 			/*	Retrieve Home Page. */
 			File index = new File("index.html");
-		
+			
+			/* Read full HTTP request. */
+			BufferedReader is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String line = is.readLine();
+			while (!line.equals("")) {
+			    System.out.println(line);
+			    line = is.readLine();
+			}		
+			
 			/* Read Home Page into a String. */
 			BufferedReader reader = new BufferedReader(new FileReader(index));
-			String line = reader.readLine();
+			line = reader.readLine();
 			String web_page = "";
 			while (line != null) {
 				web_page += line;
@@ -30,7 +39,7 @@ public class Response implements Runnable {
 			}
 			reader.close();
 		
-			/* Create and Send  Http Response with Home Page as Body. */
+			/* Create and Send Http Response with Home Page as Body. */
 			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
 			socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
 		

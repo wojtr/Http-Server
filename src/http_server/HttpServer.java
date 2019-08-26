@@ -15,7 +15,7 @@ public class HttpServer {
 				
 			/* Listen for client connection. */
 			final Socket socket = server.accept();
-			
+						
 			/* Create thread to handle response. */
 			Thread t1 = new Thread(new Response(socket));
 			t1.start();
