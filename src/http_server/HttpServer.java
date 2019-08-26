@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HttpServer {
+public class HttpServer implements Runnable {
+	
+	private static Socket socket;
+	private static String web_page;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -20,7 +23,7 @@ public class HttpServer {
 		/* Read Home Page into a String. */
 		BufferedReader reader = new BufferedReader(new FileReader(index));
 		String line = reader.readLine();
-		String web_page = "";
+		web_page = "";
 		while (line != null) {
 			web_page += line;
 			line = reader.readLine();
@@ -30,16 +33,33 @@ public class HttpServer {
 		while (true) {
 				
 			/* Listen for client connection. */
-			final Socket socket = server.accept();
+			socket = server.accept();
 				
+			Thread t1 = new Thread(new HttpServer());
+			t1.start();
+				
+		}
+	}
+	
+	public void run() {
+		
+		System.out.println("Thread Created!");
+		
+		try {
+			
 			/* Create and Send  Http Response with Home Page as Body. */
 			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
 			socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
 			
 			/* Close Socket */
 			socket.close();
-				
+			
+		} catch (Exception e) {
+			
+			System.out.println(e.getMessage());
+			
 		}
+		
 	}
 
 }
