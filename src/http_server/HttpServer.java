@@ -30,11 +30,14 @@ public class HttpServer {
 		while (true) {
 				
 			/* Listen for client connection. */
-			final Socket socket = server.accept();				
+			final Socket socket = server.accept();
 				
 			/* Create and Send  Http Response with Home Page as Body. */
 			String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
 			socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
+			
+			/* Close Socket */
+			socket.close();
 				
 		}
 	}
