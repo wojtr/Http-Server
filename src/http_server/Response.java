@@ -56,61 +56,78 @@ public class Response implements Runnable {
 		} catch (Exception e) {
 			
 			/* If function fails print message to console. */
-			System.out.println(e.getMessage());
+			System.out.println("Bad Request Recieved.");
+			return null;
 			
-		}
-		
-		return null;
-		
+		}		
 	}
 	
+	/* Create a Response to return to socket connection.
+	 * Input: request - Request object with all the necessary information to create a response. 
+	 * Output: String - Contains the correct HTTP response based upon the data in the Request object. */
 	private String createResponse(Request request) {
-		
-		try {
 			
 			if (request == null) {
 				
 				/* If the input stream was unable to be read then return a 400 error response.  */
-				String httpResponse = "HTTP/1.1 404 Bad Request\\r\\n\\r\\n";
+				String httpResponse = "HTTP/1.1 400 Bad Request\r\n\r\n";
 				return httpResponse;
 				
 			} else if (request.getPath().equals("/")) {
-			
-				/*	Retrieve Home Page. */
-				File index = new File("index.html");	
-			
-				/* Read Home Page into a String. */
-				BufferedReader reader = new BufferedReader(new FileReader(index));
-				String line = reader.readLine();
-				String web_page = "";
-				while (line != null) {
-					web_page += line;
-					line = reader.readLine();
+				
+				/* Get the requested web page. */
+				String webPage = getWebPage("index.html");
+				
+				/* Return system error if web page cannot be found. */
+				if (webPage == null) {
+					
+					/* If the server fails to get the web page return a 500 error message.  */
+					String httpResponse = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
+					return httpResponse;
+					
 				}
-				reader.close();
 				
 				/* Create and return Http Response with Home Page as Body. */
-				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + web_page;
+				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + webPage;
 				return httpResponse;
 			
 			} else {
 				
 				/* Create and return Http Response redirecting to home page for every path. */
-				String httpResponse = "HTTP/1.1 303 See Other\r\nLocation: http://localhost:8080/";
+				String httpResponse = "HTTP/1.1 404 Not Found\r\n";
 				return httpResponse;
 			
+			}		
+	}
+	
+	/* Get the web page requested.
+	 * Input: file - String containing file name. (All files are stored on the base level "/".) 
+	 * Output: String - Full web page ready to be sent in the body of a HTTP message. */
+	private String getWebPage(String file) {
+		
+		try {
+			
+			/*	Retrieve Home Page. */
+			File index = new File(file);	
+	
+			/* Read Home Page into a String. */
+			BufferedReader reader = new BufferedReader(new FileReader(index));
+			String line = reader.readLine();
+			String webPage = "";
+			while (line != null) {
+				webPage += line;
+				line = reader.readLine();
 			}
+			reader.close();
+		
+			return webPage;
 			
 		} catch (Exception e) {
 			
 			/* If function fails print message to console. */
-			System.out.println(e.getMessage());
+			System.out.println("Unable to get requested web page.");
+			return null;
 			
 		}
-		
-		/* If all else fails return a 400 error message.  */
-		String httpResponse = "HTTP/1.1 404 Bad Request\\r\\n\\r\\n";
-		return httpResponse;
-		
 	}
 }
