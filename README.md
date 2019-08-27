@@ -1,5 +1,7 @@
 # Http-Server
 
+8/27/2019 - Updated responses to send files/images and moved images into their own folders.
+
 8/27/2019 - Updated reponse codes to be correct on errors and when files are not found.
 
 8/26/2019 - Created functions to parse and dynamically create responses. Parsed responses are now stored in a Request object.

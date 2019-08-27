@@ -2,9 +2,10 @@ package http_server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.file.Files;
 
 public class Response implements Runnable {
 	
@@ -16,22 +17,24 @@ public class Response implements Runnable {
 	
 	public void run() {
 		
-		try {
+		try {	
 			
 			/* Parse request into request object. */
 			Request request = parseRequest(socket);
-		
-			/* Create and Send Http Response with Home Page as Body. */
-			String httpResponse = createResponse(request);
-			socket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
+			
+			/* Revert web site paths to files if needed. */
+			updatePath(request);
+			
+			/* Write the response to the socket's output stream. */
+			writeResponse(request);
 		
 			/* Close Socket */
 			socket.close();
-		
+			
 		} catch (Exception e) {
 			
 			/* If function fails print message to console. */
-			System.out.println(e.getMessage());
+			System.out.println("Unable to close socket.");
 			
 		}
 	}
@@ -62,71 +65,83 @@ public class Response implements Runnable {
 		}		
 	}
 	
-	/* Create a Response to return to socket connection.
+	/* Create a Response and write it to socket connection.
 	 * Input: request - Request object with all the necessary information to create a response. 
-	 * Output: String - Contains the correct HTTP response based upon the data in the Request object. */
-	private String createResponse(Request request) {
+	 * Output: boolean - True if response was , false otherwise. */
+	private void writeResponse(Request request) {
+			
+		try {
 			
 			if (request == null) {
 				
 				/* If the input stream was unable to be read then return a 400 error response.  */
 				String httpResponse = "HTTP/1.1 400 Bad Request\r\n\r\n";
-				return httpResponse;
+				OutputStream os = socket.getOutputStream();
+				os.write(httpResponse.getBytes("UTF-8"));
+				return;
 				
-			} else if (request.getPath().equals("/")) {
+			} else {
 				
-				/* Get the requested web page. */
-				String webPage = getWebPage("index.html");
+				/*	Retrieve Page by file path. */
+				File file = getFile(request.getPath());
 				
-				/* Return system error if web page cannot be found. */
-				if (webPage == null) {
+				/* if file could not be found, return a 404 message. */
+				if (file == null) {
 					
-					/* If the server fails to get the web page return a 500 error message.  */
-					String httpResponse = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
-					return httpResponse;
+					String httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
+					OutputStream os = socket.getOutputStream();
+					os.write(httpResponse.getBytes("UTF-8"));
+					return;
 					
 				}
 				
-				/* Create and return Http Response with Home Page as Body. */
-				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + webPage;
-				return httpResponse;
-			
-			} else {
+				OutputStream os = socket.getOutputStream();
+				String httpResponse = "HTTP/1.1 200 OK\r\n\r\n";
+				os.write(httpResponse.getBytes("UTF-8"));
+				Files.copy(file.toPath(), os);
+				return;
 				
-				/* Create and return Http Response redirecting to home page for every path. */
-				String httpResponse = "HTTP/1.1 404 Not Found\r\n";
-				return httpResponse;
-			
 			}		
-	}
-	
-	/* Get the web page requested.
-	 * Input: file - String containing file name. (All files are stored on the base level "/".) 
-	 * Output: String - Full web page ready to be sent in the body of a HTTP message. */
-	private String getWebPage(String file) {
-		
-		try {
-			
-			/*	Retrieve Home Page. */
-			File index = new File(file);	
-	
-			/* Read Home Page into a String. */
-			BufferedReader reader = new BufferedReader(new FileReader(index));
-			String line = reader.readLine();
-			String webPage = "";
-			while (line != null) {
-				webPage += line;
-				line = reader.readLine();
-			}
-			reader.close();
-		
-			return webPage;
-			
 		} catch (Exception e) {
 			
 			/* If function fails print message to console. */
-			System.out.println("Unable to get requested web page.");
+			System.out.println("Error writing response.");
+			return;
+			
+		}
+	}
+	
+	/* Get the file requested.
+	 * Input: path - String containing file name. (All files are stored on the base level "/".) 
+	 * Output: String - file ready to be copied into the body of a HTTP message. 
+	 * 		   null - Returns null if there is an error retrieving the file. */
+	private File getFile(String path) {
+			
+		/*	Retrieve Page by file name. */
+		File file = new File(path);
+		if (file.exists()) {
+			return file;
+		} else {
+			System.out.println("File Not found.");
 			return null;
+		}
+		
+	}
+	
+	/* Reverts web site paths to files if needed.
+	 * Input: request - Request object with path to requested file. */
+	private void updatePath(Request request) {
+		
+		/* Path to index.html is "/" */
+		if (request.getPath().equals("/")) {
+			
+			request.setPath("index.html");
+			return;
+			
+		} else {
+			
+			request.setPath(request.getPath().substring(1));
+			return;
 			
 		}
 	}

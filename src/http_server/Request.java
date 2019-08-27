@@ -23,4 +23,16 @@ public class Request {
 	public String getVersion() {
 		return this.version;
 	}
+	
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
+	public void setVersion(String version) {
+		this.version = version;
+	}
 }
