@@ -1,5 +1,7 @@
 # Http-Server
 
+8/27/2019 - Added checks to issuer that no unauthorized files are sent to a user.
+
 8/27/2019 - Updated responses to send files/images and moved images into their own folders.
 
 8/27/2019 - Updated reponse codes to be correct on errors and when files are not found.
