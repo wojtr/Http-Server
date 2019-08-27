@@ -1,5 +1,7 @@
 # Http-Server
 
+8/26/2019 - Created functions to parse and dynamically create responses. Parsed responses are now stored in a Request object.
+
 8/26/2019 - Implemented reader for reading the full HTTP request. Plan to parse this data next.
 
 8/26/2019 - Implemented Threads to handle the http responses. The server currently however only responds with the home webpage.
