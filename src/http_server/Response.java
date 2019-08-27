@@ -6,13 +6,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 
 public class Response implements Runnable {
 	
 	private Socket socket;
+	private List<String> contents;
 	
 	public Response(Socket socket) {
 		this.socket = socket;
+		this.contents = Arrays.asList(new String[] {
+				"index.html",
+				"images/website_logo.jpg",
+				"images/home_background.jpg",
+				"images/facebook_logo.jpg",
+				"images/twitter_logo.jpg",
+				"images/linkedin_logo.png",
+				"images/instagram_logo.png"
+		});
 	}
 	
 	public void run() {
@@ -119,7 +131,9 @@ public class Response implements Runnable {
 			
 		/*	Retrieve Page by file name. */
 		File file = new File(path);
-		if (file.exists()) {
+		
+		/* if the file exists and users are authorized to access said file then return it. */
+		if (file.exists() && contents.contains(path)) {
 			return file;
 		} else {
 			System.out.println("File Not found.");
